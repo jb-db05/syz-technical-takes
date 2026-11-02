@@ -102,6 +102,10 @@ def cmd_analyze(a):
 # ---------------------------------------------------------------- build
 def cmd_build(a):
     spec = json.loads(Path(a.spec).read_text())
+    # JSON object keys are strings; the renderer looks overlay anchors up by numeric level
+    ov = spec.get("overlays") or {}
+    if ov.get("hline_from"):
+        ov["hline_from"] = {float(k): v for k, v in ov["hline_from"].items()}
     if a.workbook:
         spec["xlsx"] = a.workbook
     if "xlsx" not in spec:
