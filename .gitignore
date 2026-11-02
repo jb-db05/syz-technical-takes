@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+wheels/
+
+# Virtualenv / env
+.venv/
+.env
+
+# Caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Font cache + build scratch (fetched/produced at run time)
+.ttfonts/
+_tt_build/
+fonts/
+
+# Run folders stay LOCAL — client-adjacent data, never committed.
+# The deliverable PDF and its audit trail are handed back in chat, not via git.
+.input/
+.output/
