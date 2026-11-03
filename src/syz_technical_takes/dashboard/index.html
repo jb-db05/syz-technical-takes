@@ -1,0 +1,263 @@
+<meta name="dash-one-writer">
+<style>
+  .tu { --syz-orange: #FF6C0E; --syz-amber: #FFA400; --syz-mint: #3BAF90; --syz-blueberry: #4B5F80; --syz-mulberry: #AC5D85;
+        font-family: var(--font-anthropic-sans); display: grid; gap: var(--cds-gap-lg); max-width: 72rem; margin-inline: auto; }
+  .tu-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-md); }
+  .tu-head > div { min-width: 0; display: grid; gap: var(--cds-gap-xs); }
+  .tu-eyebrow { margin: 0; font-size: var(--cds-font-size-caption); font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--syz-orange); }
+  .tu-title { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); text-wrap: balance; }
+  .tu-take { margin: 0; color: var(--color-fg-muted); }
+  .tu .tu-take b { font-weight: 700; color: var(--color-fg); font-variant-numeric: tabular-nums; }
+  .tu-pick { display: grid; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .tu-pick select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-panel);
+                    border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); min-width: 10rem; }
+  .tu-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+  .tu-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+  .tu-tile { display: grid; gap: var(--cds-gap-xs); border-top: 3px solid var(--syz-orange); }
+  .tu-tile:nth-child(even) { border-top-color: var(--syz-blueberry); }
+  .tu-label { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .04em; }
+  .tu-num { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .tu-note { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .tu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+  .tu-card h2 { margin: 0 0 var(--cds-gap-xs); font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .tu-chart { position: relative; min-height: 220px; margin-top: var(--cds-gap-md); }
+  .tu-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border);
+            border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm);
+            font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .tu-tip span { color: var(--cds-text-secondary); display: block; }
+  .tu-verdicts { display: grid; gap: var(--cds-gap-sm); margin-top: var(--cds-gap-md); }
+  .tu-vrow { display: grid; grid-template-columns: 6.5rem 1fr 2.5rem; align-items: center; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-body); }
+  .tu-vbar { height: 12px; border-radius: var(--cds-radius); background: var(--cds-chart-grid); overflow: hidden; }
+  .tu-vbar i { display: block; height: 100%; border-radius: var(--cds-radius); }
+  .tu-vrow b { text-align: right; font-variant-numeric: tabular-nums; }
+  .tu-dot { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .4rem; }
+  .tu-table-wrap { overflow-x: auto; margin-top: var(--cds-gap-md); max-height: 28rem; overflow-y: auto; }
+  .tu-table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+  .tu-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium);
+                 color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm);
+                 border-bottom: 1px solid var(--color-border-line); }
+  .tu-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .tu-table .num { text-align: right; }
+  .tu-verdict { font-size: var(--cds-font-size-caption); font-weight: 700; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px; color: #fff; }
+  .tu-verdict.BULLISH { background: var(--syz-mint); } .tu-verdict.NEUTRAL { background: var(--syz-blueberry); } .tu-verdict.BEARISH { background: var(--syz-mulberry); }
+  .tu-empty { margin: var(--cds-gap-md) 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  .tu-fail { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .tu-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="tu">
+  <header class="tu-head" id="summary">
+    <div>
+      <p class="tu-eyebrow">Syz Research &middot; Technical Takes</p>
+      <h1 class="tu-title">Technical Takes usage</h1>
+      <p class="tu-take"><b data-draw="tile" data-source="month_summary" data-field="documents">—</b> documents on
+        <b data-draw="tile" data-source="month_summary" data-field="underlyings">—</b> underlyings in
+        <b data-draw="month-name" data-source="month_summary" data-field="month">—</b>.</p>
+    </div>
+    <label class="tu-pick">Month
+      <select id="month-pick" data-draw="month-pick" data-source="month_summary" aria-label="Month"></select>
+    </label>
+  </header>
+
+  <section class="tu-tiles" id="tiles" aria-label="Headline figures for the month">
+    <div class="tu-card tu-tile">
+      <p class="tu-label">Documents</p>
+      <span class="tu-num" data-draw="tile" data-source="month_summary" data-field="documents">—</span>
+      <p class="tu-note">One per underlying and document date</p>
+    </div>
+    <div class="tu-card tu-tile">
+      <p class="tu-label">Underlyings</p>
+      <span class="tu-num" data-draw="tile" data-source="month_summary" data-field="underlyings">—</span>
+      <p class="tu-note">Distinct tickers covered</p>
+    </div>
+    <div class="tu-card tu-tile">
+      <p class="tu-label">Builds</p>
+      <span class="tu-num" data-draw="tile" data-source="month_summary" data-field="builds">—</span>
+      <p class="tu-note">Every PDF render, rebuilds included</p>
+    </div>
+    <div class="tu-card tu-tile">
+      <p class="tu-label">On Bloomberg data</p>
+      <span class="tu-num" data-draw="tile" data-fmt="pct" data-source="month_summary" data-field="bloomberg_share">—</span>
+      <p class="tu-note">Share of documents built from an export</p>
+    </div>
+  </section>
+
+  <div class="tu-grid">
+    <section class="tu-card" id="history">
+      <h2>Documents per month</h2>
+      <p class="tu-note">All months logged. Click a bar to open that month.</p>
+      <div class="tu-chart" data-draw="history" data-source="month_summary"></div>
+    </section>
+    <section class="tu-card" id="verdicts">
+      <h2>Verdict mix</h2>
+      <p class="tu-note">Documents by page-1 verdict in the selected month.</p>
+      <div class="tu-verdicts">
+        <div class="tu-vrow"><span><i class="tu-dot" style="background: var(--syz-mint)"></i>Bullish</span>
+          <span class="tu-vbar" data-draw="vbar" data-key="bullish" data-source="month_summary"></span>
+          <b data-draw="tile" data-source="month_summary" data-field="bullish">—</b></div>
+        <div class="tu-vrow"><span><i class="tu-dot" style="background: var(--syz-blueberry)"></i>Neutral</span>
+          <span class="tu-vbar" data-draw="vbar" data-key="neutral" data-source="month_summary"></span>
+          <b data-draw="tile" data-source="month_summary" data-field="neutral">—</b></div>
+        <div class="tu-vrow"><span><i class="tu-dot" style="background: var(--syz-mulberry)"></i>Bearish</span>
+          <span class="tu-vbar" data-draw="vbar" data-key="bearish" data-source="month_summary"></span>
+          <b data-draw="tile" data-source="month_summary" data-field="bearish">—</b></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="tu-card" id="documents">
+    <h2>Documents in the month</h2>
+    <p class="tu-note">Builds of the same underlying for the same document date count once; the last build sets the verdict and data source.</p>
+    <div class="tu-table-wrap">
+      <table class="tu-table" data-source="documents" data-row-key="ticker,doc_date">
+        <thead><tr>
+          <th data-field="doc_date">Document date</th>
+          <th data-field="ticker">Ticker</th>
+          <th data-field="name">Underlying</th>
+          <th data-field="verdict">Verdict</th>
+          <th data-field="data_source">Data</th>
+          <th data-field="builds" class="num">Builds</th>
+        </tr></thead>
+        <tbody data-draw="doc-rows" data-source="documents"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  dash.calc('month_summary', {
+    inputs: ['documents'],
+    title: 'Usage by month',
+    description: 'Documents, underlyings, builds, verdicts and Bloomberg share for each month.',
+    fn: (documents) => {
+      const byMonth = d3.group(documents, (d) => d.month);
+      return [...byMonth].sort((a, b) => d3.ascending(a[0], b[0])).map(([month, rows]) => ({
+        month,
+        documents: rows.length,
+        underlyings: new Set(rows.map((r) => r.ticker)).size,
+        builds: d3.sum(rows, (r) => Number(r.builds)),
+        bullish: rows.filter((r) => r.verdict === 'BULLISH').length,
+        neutral: rows.filter((r) => r.verdict === 'NEUTRAL').length,
+        bearish: rows.filter((r) => r.verdict === 'BEARISH').length,
+        bloomberg_share: rows.filter((r) => r.data_source.startsWith('Bloomberg')).length / rows.length,
+      }));
+    },
+  });
+
+  // the month on show: the one picked, else the latest month logged
+  window.tuMonth = () => {
+    const s = dash.data('month_summary');
+    const months = s.status === 'ok' ? s.data.map((r) => r.month) : [];
+    const picked = dash.params().month;
+    return months.includes(picked) ? picked : months[months.length - 1];
+  };
+  window.tuMonthName = (m) => d3.utcFormat('%B %Y')(new Date(m + '-01T00:00:00Z'));
+  window.tuFail = (el) => { el.replaceChildren(); const f = document.createElement('div'); f.className = 'tu-fail'; f.textContent = 'Failed to load'; el.append(f); };
+
+  dash.draw('month-pick', (sel) => {
+    const s = dash.data('month_summary');
+    const months = s.status === 'ok' ? s.data.map((r) => r.month).reverse() : [];
+    sel.replaceChildren(...months.map((m) => new Option(tuMonthName(m), m)));
+    sel.value = tuMonth() ?? '';
+    sel.onchange = () => dash.setParams({ month: sel.value });
+  });
+
+  dash.draw('month-name', (el) => {
+    const s = dash.data('month_summary');
+    const m = tuMonth();
+    if (s.status !== 'ok' || !m) { el.textContent = '—'; return; }
+    el.dataset.where = 'month=' + m;
+    el.textContent = m;
+    el.title = tuMonthName(m);
+  });
+
+  dash.draw('tile', (el) => {
+    const s = dash.data('month_summary');
+    const m = tuMonth();
+    const row = s.status === 'ok' && s.data.find((r) => r.month === m);
+    if (!row) { el.textContent = '—'; return; }
+    el.dataset.where = 'month=' + m;
+    const v = row[el.dataset.field];
+    el.textContent = el.dataset.fmt === 'pct' ? d3.format('.0%')(v) : d3.format(',')(v);
+  });
+
+  dash.draw('vbar', (el) => {
+    const s = dash.data('month_summary');
+    const row = s.status === 'ok' && s.data.find((r) => r.month === tuMonth());
+    el.replaceChildren();
+    if (!row) return;
+    const colors = { bullish: 'var(--syz-mint)', neutral: 'var(--syz-blueberry)', bearish: 'var(--syz-mulberry)' };
+    const bar = document.createElement('i');
+    bar.style.width = (row.documents ? (row[el.dataset.key] / row.documents) * 100 : 0) + '%';
+    bar.style.background = colors[el.dataset.key];
+    el.append(bar);
+  });
+
+  dash.draw('history', (el) => {
+    const s = dash.data('month_summary');
+    el.replaceChildren();
+    if (s.status === 'error') { tuFail(el); return; }
+    if (s.status !== 'ok' || !s.data.length) return;
+    const rows = s.data;
+    const sel = tuMonth();
+    const W = Math.max(el.clientWidth, 260), H = 220;
+    const yMax = d3.max(rows, (r) => r.documents) || 1;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Documents per month');
+    const y = d3.scaleLinear([0, yMax], [H - 24, 12]).nice();
+    // left margin from the widest tick label as drawn
+    const probe = svg.append('text').attr('font-size', 12).text(d3.format(',')(y.domain()[1]));
+    const ml = probe.node().getComputedTextLength() + 10; probe.remove();
+    const x = d3.scaleBand(rows.map((r) => r.month), [ml, W - 4]).padding(0.3);
+    const ticks = y.ticks(Math.min(4, y.domain()[1])).filter(Number.isInteger);
+    svg.append('g').selectAll('line').data(ticks).join('line')
+      .attr('x1', ml).attr('x2', W - 4).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(ticks).join('text')
+      .attr('x', ml - 6).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').attr('font-size', 12)
+      .attr('fill', 'var(--color-fg-muted)').text(d3.format(','));
+    const every = Math.ceil(rows.length / Math.max(1, Math.floor((W - ml) / 64)));
+    svg.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0 || r.month === sel)).join('text')
+      .attr('x', (r) => x(r.month) + x.bandwidth() / 2).attr('y', H - 6).attr('text-anchor', 'middle').attr('font-size', 12)
+      .attr('fill', 'var(--color-fg-muted)').text((r) => d3.utcFormat('%b %y')(new Date(r.month + '-01T00:00:00Z')));
+    svg.append('line').attr('x1', ml).attr('x2', W - 4).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+    const bw = Math.min(x.bandwidth(), 32);
+    const tip = document.createElement('div'); tip.className = 'tu-tip'; tip.hidden = true; el.append(tip);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', (r) => x(r.month) + (x.bandwidth() - bw) / 2).attr('width', bw)
+      .attr('y', (r) => y(r.documents)).attr('height', (r) => y(0) - y(r.documents)).attr('rx', 3)
+      .attr('fill', (r) => (r.month === sel ? 'var(--syz-orange)' : 'var(--cds-chart-muted)'))
+      .style('cursor', 'pointer')
+      .on('click', (event, r) => dash.setParams({ month: r.month }))
+      .on('mousemove', (event, r) => {
+        tip.hidden = false;
+        tip.replaceChildren();
+        const head = document.createElement('span'); head.textContent = tuMonthName(r.month);
+        tip.append(head, document.createTextNode(`${d3.format(',')(r.documents)} documents · ${d3.format(',')(r.builds)} builds`));
+        const [px, py] = d3.pointer(event, el);
+        const w = tip.offsetWidth;
+        tip.style.left = Math.max(0, Math.min(px + 12, el.clientWidth - w)) + 'px';
+        tip.style.top = Math.max(0, py - 40) + 'px';
+      })
+      .on('mouseleave', () => { tip.hidden = true; });
+  });
+
+  dash.draw('doc-rows', (tbody) => {
+    const s = dash.data('documents');
+    tbody.replaceChildren();
+    if (s.status !== 'ok') return;
+    const m = tuMonth();
+    const rows = s.data.filter((r) => r.month === m).sort((a, b) => d3.descending(a.first_logged_utc, b.first_logged_utc));
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      tr.dataset.key = [r.ticker, r.doc_date].map(encodeURIComponent).join(',');
+      const cell = (text, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text; tr.append(td); return td; };
+      cell(r.doc_date); cell(r.ticker); cell(r.name);
+      const vt = document.createElement('td'); const pill = document.createElement('span');
+      pill.className = 'tu-verdict ' + r.verdict; pill.textContent = r.verdict; vt.append(pill); tr.append(vt);
+      cell(r.data_source); cell(r.builds, 'num');
+      tbody.append(tr);
+    }
+  });
+</script>
