@@ -104,6 +104,11 @@ def cmd_build(a):
     spec = json.loads(Path(a.spec).read_text())
     if a.workbook:
         spec["xlsx"] = a.workbook
+    # JSON object keys are always strings, but render looks hline_from up by the float
+    # level in hlines / hlines_dotted - coerce, or every anchor is silently ignored.
+    ov = spec.get("overlays") or {}
+    if ov.get("hline_from"):
+        ov["hline_from"] = {float(k): v for k, v in ov["hline_from"].items()}
     if "xlsx" not in spec:
         _emit({"error": "spec has no 'xlsx' and --workbook not given"}); sys.exit(2)
     run = Path(a.run_dir) if a.run_dir else Path(spec["xlsx"]).resolve().parent.parent
