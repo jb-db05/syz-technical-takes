@@ -1,4 +1,4 @@
 logged_at_utc,doc_date,ticker,name,verdict,data_source,slug
 2026-11-02T16:18:02Z,2026-11-02,XAG,Silver,BEARISH,Free feed (SI=F),Technical_Takes_XAG_2026-11-02
 2026-11-02T16:22:57Z,2026-11-02,XAG,Silver,BEARISH,Bloomberg export,Technical_Takes_XAG_2026-11-02
-2026-11-03T07:31:07Z,2026-11-02,USGG10YR,Us Generic Govt 10 Yr,BULLISH,Free feed (^TNX),Technical_Takes_USGG10YR_2026-11-02
+2026-11-03T07:31:07Z,2026-11-02,USGG10YR,US Generic Govt 10 YR,BULLISH,Free feed (^TNX),Technical_Takes_USGG10YR_2026-11-02
