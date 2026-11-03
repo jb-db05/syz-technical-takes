@@ -53,6 +53,12 @@ ticker ─data.fetch_ohlc──▶ OHLC bars ─indicators.synthesize_workbook�
   dict, draws both charts, computes the Bollinger-width target, writes the PDF, and
   prints the checks `cli.build` folds into its JSON. **Do not edit the layout here** —
   it reproduces the shipped SPIEX document pixel-for-pixel; BUILD_SPEC.md is its spec.
+- **`usage.py`** — the usage log: `build` appends one row (no personal data; the
+  repo is public) to `usage/log.csv` on the `usage-log` branch via git plumbing
+  (hash-object/mktree/commit-tree/push, retried on a race; a failed push waits in
+  `.output/usage_pending.csv`). `usage-report` dedupes to documents (ticker × doc
+  date) and writes the dashboard CSV + email HTML. `dashboard/index.html` is the
+  page stored in the claude.ai Dashboard artifact; keep the two in sync.
 - **`cli.py`** — `syz-tt`: `stage-inputs` (shared intake, for an attached export),
   `fetch`, `analyze`, `build`, `schema`. Each prints one JSON object.
 

@@ -80,6 +80,25 @@ rawK(99) = 100 · (Close − min(Low, 99)) / (max(High, 99) − min(Low, 99))
 The 99 / 25 / 25 constants and the 146-bar warm-up are fitted, not guessed — see
 `src/syz_technical_takes/indicators.py`.
 
+## Usage log and monthly report
+
+Every `syz-tt build` appends one row to `usage/log.csv` on the repo's **`usage-log`**
+branch (date logged, document date, ticker, name, verdict, data source, slug). The
+branch is written with git plumbing, so it never touches your working tree; if the
+push fails the row waits in `.output/usage_pending.csv` and goes out with the next
+build (or `syz-tt usage-log`). **No personal data is recorded** – the repository is
+public. `--no-log` skips a test render; `TT_USAGE_LOG=0` turns logging off.
+
+```bash
+syz-tt usage-report --month 2026-11 --csv documents.csv --email-html email.html
+```
+
+prints the month's summary (documents – one per underlying and document date –
+builds, underlyings, verdict mix, Bloomberg vs free-feed share, history) and writes the
+document-level CSV the usage dashboard reads plus the email body. A scheduled task
+runs it on the 1st of each month, refreshes the dashboard and emails the summary.
+Never merge `usage-log` into `main`.
+
 ## Data provenance
 
 The bundled feed (`data.py`) is a **keyless, dev-licence** source, not Bloomberg. The
@@ -99,7 +118,9 @@ src/syz_technical_takes/
   indicators.py   synthesize the Bloomberg workbook (+ the decoded %DS/%DSS stochastic)
   analytics.py    the §7 verdict inputs (slopes, 50/200 cross, band-break signal, …)
   render.py       the Syz renderer: spec → the 3-page PDF
-  cli.py          syz-tt: fetch · analyze · build · schema
+  usage.py        the usage log (usage-log branch) and the monthly usage report
+  dashboard/      the usage dashboard page (claude.ai Dashboard artifact)
+  cli.py          syz-tt: fetch · analyze · build · schema · usage-log · usage-report
   CLAUDE.md       dev map
 spec/BUILD_SPEC.md  the normative document specification (v1.8)
 spec/INPUTS.md      what each document needs

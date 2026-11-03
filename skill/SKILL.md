@@ -117,6 +117,12 @@ Write it to `<run_dir>/.audit/spec.json`. Editorial rules (BUILD_SPEC §7):
 `page2_bottom_mm` ≤ 263, `target_working` (verify the number), empty `warnings`.
 On overflow, **shorten the text, never the chart** (keep `body_pt` 8.6); re-build.
 
+   `build` also records the document in the **usage log** (`usage_log` in its JSON:
+   `logged` = pushed to the repo's `usage-log` branch; `pending` = kept locally and
+   retried on the next build or `syz-tt usage-log`). No personal data is logged – the
+   repository is public. Use `--no-log` only for test renders that are not real
+   documents.
+
 **6. Look at it.** Render and read the pages:
 `pdftoppm -r 110 -png <pdf> <run_dir>/.audit/pg`. Check the headline fits one line,
 the verdict badge matches the prose, page-1 and page-2 badges are consistent (or a
@@ -124,7 +130,8 @@ deliberate §7 divergence), the drawn levels sit right, and **"Relative momentum
 bold**. Fix the spec and rebuild if not.
 
 **7. Deliver.** Send the PDF as a file card (its own markdown link / SendUserFile).
-Then a short delivery note: the verdict and why (the §7 chain), the drawn levels, the
+If the build reported `usage_log.status = pending`, run `syz-tt usage-log` once before
+you finish. Then a short delivery note: the verdict and why (the §7 chain), the drawn levels, the
 implied-target working if any, any page-2-badge-vs-page-1 divergence, and the
 **provenance caveat** (data from the free feed, not Bloomberg; any benchmark
 substitution from `provenance.notes`; a commodity uses the front-month future as the

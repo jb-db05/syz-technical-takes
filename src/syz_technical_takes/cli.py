@@ -11,6 +11,8 @@ calls what, and src/syz_technical_takes/CLAUDE.md for the map):
   build          a spec JSON (the CONFIG the model authors) -> the 3-page PDF
                  + the render checks (paragraph lines, page bounds, target working)
   schema         print the spec template + which keys are required
+  usage-log      push any usage rows still waiting locally (normally automatic)
+  usage-report   monthly usage summary from the usage-log branch (+ dashboard CSV, email HTML)
 
 The division of labour mirrors every sibling skill: deterministic Python does the
 data, the indicators (including the decoded %DS/%DSS stochastic), the analytics
@@ -33,7 +35,7 @@ try:                                   # optional: only for the `stage-inputs` c
 except ImportError:                    # standalone install -> ticker-based use only
     staging = None
 
-from . import benchmarks, data
+from . import benchmarks, data, usage
 from .analytics import analyze as analyze_workbook
 from .indicators import synthesize_workbook
 
@@ -63,6 +65,7 @@ def cmd_fetch(a):
         import shutil
         shutil.copy(a.xlsx, wb_path)
         prov["source"] = "bloomberg_export_supplied"
+        usage.write_provenance(run, prov)
         _emit({"run_dir": str(run), "workbook": str(wb_path), "provenance": prov,
                "benchmark": None, "note": "using the supplied export as-is"})
         return
@@ -87,6 +90,7 @@ def cmd_fetch(a):
             prov["notes"].append(f"benchmark {bench_name} ({bsym}) failed: {e}; relative strength dropped")
             bench_name = None
 
+    usage.write_provenance(run, prov)
     summ = synthesize_workbook(px["bars"], wb_path, bench_bars=bench_bars, bench_name=bench_name)
     _emit({"run_dir": str(run), "workbook": str(wb_path),
            "currency": px.get("currency"), "benchmark": bench_name,
@@ -133,7 +137,30 @@ def cmd_build(a):
         "target_working": _grab(r"(target: .+?-> target [0-9.]+)"),
         "warnings": re.findall(r"WARNING:[^\n]+", log),
     }
-    _emit({"pdf": str(pdf), "slug": spec.get("slug"), "checks": checks, "log": log.strip()})
+    log_status = {"status": "skipped", "note": "--no-log"} if a.no_log else \
+        usage.record(usage.row_from_spec(spec, usage.read_provenance(spec["xlsx"])))
+    _emit({"pdf": str(pdf), "slug": spec.get("slug"), "checks": checks, "usage_log": log_status,
+           "log": log.strip()})
+
+
+# ---------------------------------------------------------------- usage
+def cmd_usage_log(a):
+    repo = usage.repo_root(Path(__file__).resolve().parent) or usage.repo_root()
+    _emit(usage.flush(repo) if repo else {"status": "skipped", "note": "not inside a git checkout"})
+
+
+def cmd_usage_report(a):
+    rows = usage.read_log(path=a.log)
+    month = a.month or usage.previous_month()
+    rep = usage.report(rows, month)
+    out = {"report": rep}
+    if a.csv:
+        Path(a.csv).parent.mkdir(parents=True, exist_ok=True)
+        Path(a.csv).write_text(usage.documents_csv(rows)); out["csv"] = a.csv
+    if a.email_html:
+        Path(a.email_html).parent.mkdir(parents=True, exist_ok=True)
+        Path(a.email_html).write_text(usage.email_html(rep, a.dashboard_url)); out["email_html"] = a.email_html
+    _emit(out)
 
 
 # ---------------------------------------------------------------- schema
@@ -202,7 +229,19 @@ def main(argv=None):
     b.add_argument("--workbook", help="inject as spec['xlsx']")
     b.add_argument("--run-dir"); b.add_argument("--out-dir"); b.add_argument("--work-dir")
     b.add_argument("--font-dir")
+    b.add_argument("--no-log", action="store_true", help="do not record this build in the usage log")
     b.set_defaults(fn=cmd_build)
+
+    ul = sub.add_parser("usage-log", help="push usage rows still waiting locally")
+    ul.set_defaults(fn=cmd_usage_log)
+
+    ur = sub.add_parser("usage-report", help="monthly usage summary from the usage-log branch")
+    ur.add_argument("--month", help="YYYY-MM (default: the previous calendar month)")
+    ur.add_argument("--log", help="read this CSV instead of origin/usage-log")
+    ur.add_argument("--csv", help="write the document-level CSV the dashboard reads")
+    ur.add_argument("--email-html", help="write the email body (HTML)")
+    ur.add_argument("--dashboard-url", help="link to put in the email")
+    ur.set_defaults(fn=cmd_usage_report)
 
     s = sub.add_parser("schema", help="print the spec template")
     s.set_defaults(fn=cmd_schema)
