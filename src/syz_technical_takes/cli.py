@@ -102,6 +102,11 @@ def cmd_analyze(a):
 # ---------------------------------------------------------------- build
 def cmd_build(a):
     spec = json.loads(Path(a.spec).read_text())
+    # JSON object keys are always strings, but render looks hline_from up by the
+    # numeric level (as in hlines) -> coerce "47.8" to 47.8 or the anchor is ignored.
+    ov = spec.get("overlays") or {}
+    if isinstance(ov.get("hline_from"), dict):
+        ov["hline_from"] = {float(k): v for k, v in ov["hline_from"].items()}
     if a.workbook:
         spec["xlsx"] = a.workbook
     if "xlsx" not in spec:
