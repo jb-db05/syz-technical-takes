@@ -170,7 +170,7 @@ Eyebrow label in orange: `THE BUSINESS` (single stock), `THE INDEX`, `THE SECTOR
 `THE INSTRUMENT` (yields), `THE CONTRACT` (futures), `THE PAIR` (FX). Keep to ≤ 4 lines.
 Set `CONFIG["page2_description"] = False` to omit it.
 
-**4.4 Signature** — `Florian Marini, CFA, CMT – Head of Research · Syz Private Banking`,
+**4.4 Signature** — `Syz Research · Syz Private Banking`,
 right-aligned, 7.6 pt blueberry, 9 mm above the page bottom. Page 2 carries **no legal
 text**; the disclaimer is on page 3 (§3b).
 

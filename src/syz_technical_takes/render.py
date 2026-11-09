@@ -85,7 +85,7 @@ CONFIG = dict(
         "calculated as a <b>total-return index</b>. Compared with the SMI, it carries a larger weight in "
         "<b>industrials, technology and domestic financials</b> and a much smaller one in healthcare and staples."
     ),
-    author          = "Florian Marini, CFA, CMT &ndash; Head of Research &middot; Syz Private Banking",
+    author          = "Syz Research &middot; Syz Private Banking",
     footer          = "Syz Research &middot; Technical Takes &middot; 29 October 2026",
     chart_source    = "Source: Syz Research / Bloomberg",
     chart2_source   = "Source: Syz Research / Bloomberg",
