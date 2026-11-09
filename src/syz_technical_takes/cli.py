@@ -182,7 +182,7 @@ SPEC_TEMPLATE = {
     "target": "OPTIONAL {\"breakout\": <level>, \"direction\": \"up|down\"} on a breakout only",
     "business_title": "THE BUSINESS | THE INDEX | THE SECTOR | THE COMMODITY | THE PAIR | THE INSTRUMENT",
     "business_html": "<=4 lines; prices <b>bold</b>",
-    "author": "Florian Marini, CFA, CMT &ndash; Head of Research &middot; Syz Private Banking",
+    "author": "Syz Research &middot; Syz Private Banking",
     "footer": "Syz Research &middot; Technical Takes &middot; <date>",
     "chart_source": "Source: Syz Research / Bloomberg",
     "chart2_source": "Source: Syz Research / Bloomberg",
