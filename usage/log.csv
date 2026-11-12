@@ -3,3 +3,4 @@ logged_at_utc,doc_date,ticker,name,verdict,data_source,slug
 2026-11-02T16:22:57Z,2026-11-02,XAG,Silver,BEARISH,Bloomberg export,Technical_Takes_XAG_2026-11-02
 2026-11-03T07:31:07Z,2026-11-02,USGG10YR,US Generic Govt 10 YR,BULLISH,Free feed (^TNX),Technical_Takes_USGG10YR_2026-11-02
 2026-11-10T14:44:21Z,2026-11-10,ILMN,Illumina,BULLISH,Free feed (ILMN),Technical_Takes_ILMN_2026-11-10
+2026-11-12T07:19:36Z,2026-11-11,EURUSD,Euro / US Dollar,BEARISH,Free feed (EURUSD=X),Technical_Takes_EURUSD_2026-11-11
